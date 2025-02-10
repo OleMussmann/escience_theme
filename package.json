@@ -1,0 +1,25 @@
+{
+  "name": "escience_theme",
+  "version": "0.0.1",
+  "description": "eScience Center theme for web presentations",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OleMussmann/escience_theme.git"
+  },
+  "keywords": [
+    "reveal",
+    "reveal.js",
+    "theme"
+  ],
+  "author": "Ole Mussmann",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/OleMussmann/escience_theme/issues"
+  },
+  "homepage": "https://github.com/OleMussmann/escience_theme#readme"
+}
