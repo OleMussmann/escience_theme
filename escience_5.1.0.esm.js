@@ -695,42 +695,6 @@ footer {
 // TODO: Refactor this quick hack into a Reveal plugin form (it works at least)
 const initDecorations = function(Reveal) {
 
-if (!document.getElementById('syntax_highlighting'))
-{
-  var head  = document.getElementsByTagName('head')[0];
-  var link  = document.createElement('link');
-  link.id   = 'syntax_highlighting';
-  link.rel  = 'stylesheet';
-  link.type = 'text/css';
-  link.href = 'plugin/highlight/monokai.css';
-  link.media = 'all';
-  head.appendChild(link);
-}
-
-if (!document.getElementById('black_base_theme'))
-{
-  var head  = document.getElementsByTagName('head')[0];
-  var link  = document.createElement('link');
-  link.id   = 'black_base_theme';
-  link.rel  = 'stylesheet';
-  link.type = 'text/css';
-  link.href = 'dist/theme/black.css';
-  link.media = 'all';
-  head.appendChild(link);
-}
-
-//if (!document.getElementById('nlescCss'))
-//{
-//  var head  = document.getElementsByTagName('head')[0];
-//  var link  = document.createElement('link');
-//  link.id   = 'nlescCss';
-//  link.rel  = 'stylesheet';
-//  link.type = 'text/css';
-//  link.href = 'plugin/escience/escience_5.1.0.css';
-//  link.media = 'all';
-//  head.appendChild(link);
-//}
-
 if (!document.getElementById('fonts'))
 {
   var head  = document.getElementsByTagName('head')[0];
