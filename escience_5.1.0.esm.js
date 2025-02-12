@@ -7,6 +7,686 @@ let Escience = {
 
 export default Escience;
 
+const black_css = `
+/**
+ * Black theme for reveal.js. This is the opposite of the 'white' theme.
+ *
+ * By Hakim El Hattab, http://hakim.se
+ */
+
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url('./source-sans-pro-regular.eot');
+    src: url('./source-sans-pro-regular.eot?#iefix') format('embedded-opentype'),
+         url('./source-sans-pro-regular.woff') format('woff'),
+         url('./source-sans-pro-regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url('./source-sans-pro-italic.eot');
+    src: url('./source-sans-pro-italic.eot?#iefix') format('embedded-opentype'),
+         url('./source-sans-pro-italic.woff') format('woff'),
+         url('./source-sans-pro-italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url('./source-sans-pro-semibold.eot');
+    src: url('./source-sans-pro-semibold.eot?#iefix') format('embedded-opentype'),
+         url('./source-sans-pro-semibold.woff') format('woff'),
+         url('./source-sans-pro-semibold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url('./source-sans-pro-semibolditalic.eot');
+    src: url('./source-sans-pro-semibolditalic.eot?#iefix') format('embedded-opentype'),
+         url('./source-sans-pro-semibolditalic.woff') format('woff'),
+         url('./source-sans-pro-semibolditalic.ttf') format('truetype');
+    font-weight: 600;
+    font-style: italic;
+}
+
+section.has-light-background, section.has-light-background h1, section.has-light-background h2, section.has-light-background h3, section.has-light-background h4, section.has-light-background h5, section.has-light-background h6 {
+  color: #222;
+}
+
+/*********************************************
+ * GLOBAL STYLES
+ *********************************************/
+:root {
+  --r-background-color: #191919;
+  --r-main-font: Source Sans Pro, Helvetica, sans-serif;
+  --r-main-font-size: 42px;
+  --r-main-color: #fff;
+  --r-block-margin: 20px;
+  --r-heading-margin: 0 0 20px 0;
+  --r-heading-font: Source Sans Pro, Helvetica, sans-serif;
+  --r-heading-color: #fff;
+  --r-heading-line-height: 1.2;
+  --r-heading-letter-spacing: normal;
+  --r-heading-text-transform: uppercase;
+  --r-heading-text-shadow: none;
+  --r-heading-font-weight: 600;
+  --r-heading1-text-shadow: none;
+  --r-heading1-size: 2.5em;
+  --r-heading2-size: 1.6em;
+  --r-heading3-size: 1.3em;
+  --r-heading4-size: 1em;
+  --r-code-font: monospace;
+  --r-link-color: #42affa;
+  --r-link-color-dark: #068de9;
+  --r-link-color-hover: #8dcffc;
+  --r-selection-background-color: rgba(66, 175, 250, 0.75);
+  --r-selection-color: #fff;
+  --r-overlay-element-bg-color: 240, 240, 240;
+  --r-overlay-element-fg-color: 0, 0, 0;
+}
+
+.reveal-viewport {
+  background: #191919;
+  background-color: var(--r-background-color);
+}
+
+.reveal {
+  font-family: var(--r-main-font);
+  font-size: var(--r-main-font-size);
+  font-weight: normal;
+  color: var(--r-main-color);
+}
+
+.reveal ::selection {
+  color: var(--r-selection-color);
+  background: var(--r-selection-background-color);
+  text-shadow: none;
+}
+
+.reveal ::-moz-selection {
+  color: var(--r-selection-color);
+  background: var(--r-selection-background-color);
+  text-shadow: none;
+}
+
+.reveal .slides section,
+.reveal .slides section > section {
+  line-height: 1.3;
+  font-weight: inherit;
+}
+
+/*********************************************
+ * HEADERS
+ *********************************************/
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  margin: var(--r-heading-margin);
+  color: var(--r-heading-color);
+  font-family: var(--r-heading-font);
+  font-weight: var(--r-heading-font-weight);
+  line-height: var(--r-heading-line-height);
+  letter-spacing: var(--r-heading-letter-spacing);
+  text-transform: var(--r-heading-text-transform);
+  text-shadow: var(--r-heading-text-shadow);
+  word-wrap: break-word;
+}
+
+.reveal h1 {
+  font-size: var(--r-heading1-size);
+}
+
+.reveal h2 {
+  font-size: var(--r-heading2-size);
+}
+
+.reveal h3 {
+  font-size: var(--r-heading3-size);
+}
+
+.reveal h4 {
+  font-size: var(--r-heading4-size);
+}
+
+.reveal h1 {
+  text-shadow: var(--r-heading1-text-shadow);
+}
+
+/*********************************************
+ * OTHER
+ *********************************************/
+.reveal p {
+  margin: var(--r-block-margin) 0;
+  line-height: 1.3;
+}
+
+/* Remove trailing margins after titles */
+.reveal h1:last-child,
+.reveal h2:last-child,
+.reveal h3:last-child,
+.reveal h4:last-child,
+.reveal h5:last-child,
+.reveal h6:last-child {
+  margin-bottom: 0;
+}
+
+/* Ensure certain elements are never larger than the slide itself */
+.reveal img,
+.reveal video,
+.reveal iframe {
+  max-width: 95%;
+  max-height: 95%;
+}
+
+.reveal strong,
+.reveal b {
+  font-weight: bold;
+}
+
+.reveal em {
+  font-style: italic;
+}
+
+.reveal ol,
+.reveal dl,
+.reveal ul {
+  display: inline-block;
+  text-align: left;
+  margin: 0 0 0 1em;
+}
+
+.reveal ol {
+  list-style-type: decimal;
+}
+
+.reveal ul {
+  list-style-type: disc;
+}
+
+.reveal ul ul {
+  list-style-type: square;
+}
+
+.reveal ul ul ul {
+  list-style-type: circle;
+}
+
+.reveal ul ul,
+.reveal ul ol,
+.reveal ol ol,
+.reveal ol ul {
+  display: block;
+  margin-left: 40px;
+}
+
+.reveal dt {
+  font-weight: bold;
+}
+
+.reveal dd {
+  margin-left: 40px;
+}
+
+.reveal blockquote {
+  display: block;
+  position: relative;
+  width: 70%;
+  margin: var(--r-block-margin) auto;
+  padding: 5px;
+  font-style: italic;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
+}
+
+.reveal blockquote p:first-child,
+.reveal blockquote p:last-child {
+  display: inline-block;
+}
+
+.reveal q {
+  font-style: italic;
+}
+
+.reveal pre {
+  display: block;
+  position: relative;
+  width: 90%;
+  margin: var(--r-block-margin) auto;
+  text-align: left;
+  font-size: 0.55em;
+  font-family: var(--r-code-font);
+  line-height: 1.2em;
+  word-wrap: break-word;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.reveal code {
+  font-family: var(--r-code-font);
+  text-transform: none;
+  tab-size: 2;
+}
+
+.reveal pre code {
+  display: block;
+  padding: 5px;
+  overflow: auto;
+  max-height: 400px;
+  word-wrap: normal;
+}
+
+.reveal .code-wrapper {
+  white-space: normal;
+}
+
+.reveal .code-wrapper code {
+  white-space: pre;
+}
+
+.reveal table {
+  margin: auto;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.reveal table th {
+  font-weight: bold;
+}
+
+.reveal table th,
+.reveal table td {
+  text-align: left;
+  padding: 0.2em 0.5em 0.2em 0.5em;
+  border-bottom: 1px solid;
+}
+
+.reveal table th[align=center],
+.reveal table td[align=center] {
+  text-align: center;
+}
+
+.reveal table th[align=right],
+.reveal table td[align=right] {
+  text-align: right;
+}
+
+.reveal table tbody tr:last-child th,
+.reveal table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.reveal sup {
+  vertical-align: super;
+  font-size: smaller;
+}
+
+.reveal sub {
+  vertical-align: sub;
+  font-size: smaller;
+}
+
+.reveal small {
+  display: inline-block;
+  font-size: 0.6em;
+  line-height: 1.2em;
+  vertical-align: top;
+}
+
+.reveal small * {
+  vertical-align: top;
+}
+
+.reveal img {
+  margin: var(--r-block-margin) 0;
+}
+
+/*********************************************
+ * LINKS
+ *********************************************/
+.reveal a {
+  color: var(--r-link-color);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.reveal a:hover {
+  color: var(--r-link-color-hover);
+  text-shadow: none;
+  border: none;
+}
+
+.reveal .roll span:after {
+  color: #fff;
+  background: var(--r-link-color-dark);
+}
+
+/*********************************************
+ * Frame helper
+ *********************************************/
+.reveal .r-frame {
+  border: 4px solid var(--r-main-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.reveal a .r-frame {
+  transition: all 0.15s linear;
+}
+
+.reveal a:hover .r-frame {
+  border-color: var(--r-link-color);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.55);
+}
+
+/*********************************************
+ * NAVIGATION CONTROLS
+ *********************************************/
+.reveal .controls {
+  color: var(--r-link-color);
+}
+
+/*********************************************
+ * PROGRESS BAR
+ *********************************************/
+.reveal .progress {
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--r-link-color);
+}
+
+/*********************************************
+ * PRINT BACKGROUND
+ *********************************************/
+@media print {
+  .backgrounds {
+    background-color: var(--r-background-color);
+  }
+}
+`;
+
+const monokai_css = `
+/*
+Monokai style - ported by Luigi Maselli - http://grigio.org
+*/
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  background: #272822;
+  color: #ddd;
+}
+
+.hljs-tag,
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-strong,
+.hljs-name {
+  color: #f92672;
+}
+
+.hljs-code {
+  color: #66d9ef;
+}
+
+.hljs-class .hljs-title {
+  color: white;
+}
+
+.hljs-attribute,
+.hljs-symbol,
+.hljs-regexp,
+.hljs-link {
+  color: #bf79db;
+}
+
+.hljs-string,
+.hljs-bullet,
+.hljs-subst,
+.hljs-title,
+.hljs-section,
+.hljs-emphasis,
+.hljs-type,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-addition,
+.hljs-variable,
+.hljs-template-tag,
+.hljs-template-variable {
+  color: #a6e22e;
+}
+
+.hljs-comment,
+.hljs-quote,
+.hljs-deletion,
+.hljs-meta {
+  color: #75715e;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-doctag,
+.hljs-title,
+.hljs-section,
+.hljs-type,
+.hljs-selector-id {
+  font-weight: bold;
+}
+`;
+
+const escience_css = `
+/*********************************************
+ * COLORS
+ *********************************************/
+
+:root {
+  --nlesc-blue: #009DDD;
+  --nlesc-purple: #380339;
+  --nlesc-yellow: #FFB213;
+  --light-gray: #D8D8D8;
+  --dark-gray: #2b2b2b;
+  --gray-transparent: rgba(128, 128, 128, .5);
+
+  --link-color: var(--nlesc-purple);
+  --link-color-hover: var(--nlesc-yellow);
+
+}
+
+/*********************************************
+ * GLOBAL STYLES
+ *********************************************/
+
+p, div, ul {
+  font-family: "Assistant", sans-serif !important;
+  font-optical-sizing: auto;
+  font-weight: 400 !important;
+  font-style: normal;
+}
+
+h1, h2, h3 {
+  font-family: "Nunito" !important;
+  font-weight: 700 !important;
+}
+
+h4, h5 {
+  font-family: "Assistant", sans-serif !important;
+  font-optical-sizing: auto;
+  font-weight: 700 !important;
+  font-style: normal;
+}
+
+code {
+  font-family: "Fira Code", monospace !important;
+  font-optical-sizing: auto !important;
+  font-weight: 500;
+  font-style: normal;
+  background-color: var(--gray-transparent);
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  text-transform: none;
+}
+
+.reveal {
+  font-size: 36px; }  /* make stuff smaller */
+
+::selection {
+  color: #0f0;
+  background: var(--nlesc-purple);
+  text-shadow: none; }
+
+::-moz-selection {
+  color: #fff;
+  background: var(--nlesc-purple);
+  text-shadow: none; }
+
+
+/*********************************************
+ * CUSTOM COLORS
+ *********************************************/
+.primary { color: var(--nlesc-blue) !important; }
+.secondary { color: var(--nlesc-purple) !important; }
+.tertiary { color: var(--light-gray) !important; }
+
+/*********************************************
+ * LINKS
+ *********************************************/
+.reveal a {
+  color: var(--link-color); }
+
+.reveal a:hover {
+  color: var(--link-color-hover); }
+
+.reveal .roll span:after {
+  color: #fff;
+  background: var(--nlesc-blue); }
+
+/*********************************************
+ * IMAGES
+ *********************************************/
+.reveal section img { /* undo stupid img frames */
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+.reveal a:hover img {
+  border-color: var(--nlesc-blue); }
+
+/*********************************************
+ * HIGHLIGHT COLORS
+ *********************************************/
+
+.reveal .slides section .fragment.highlight-blue.visible {
+  color: var(--nlesc-blue); }
+
+/*********************************************
+ * NAVIGATION CONTROLS
+ *********************************************/
+.reveal .controls {
+  color: var(--nlesc-yellow); }
+
+/*********************************************
+ * PROGRESS BAR
+ *********************************************/
+.reveal .progress {
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--nlesc-yellow); }
+
+.reveal .progress span {
+  background: var(--nlesc-yellow);
+  -webkit-transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985);
+  -moz-transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985);
+  transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985); }
+
+/*********************************************
+ * FOOTER
+ *********************************************/
+
+.slides .footer {
+  font-size: x-small !important;
+  width: 100%;
+  clear: both;
+/*  padding: 50px 0 0 0;*/
+}
+
+/*********************************************
+ * PRINT BACKGROUND
+ *********************************************/
+@media print {
+  .backgrounds {
+    background-color: var(--dark-gray); } }
+
+/*********************************************
+ * DIM BACKGROUND PICTURES
+ *********************************************/
+.dim .backgrounds {
+	-webkit-filter: brightness(.4) !important;
+	-moz-filter: brightness(.4) !important;
+	-o-filter: brightness(.4) !important;
+	-ms-filter: brightness(.4) !important;
+	filter: brightness(.4) !important;
+  -webkit-transition: -webkit-filter 100ms linear;
+  transition: filter 100ms linear;
+}
+
+.dim_3 .backgrounds {
+	-webkit-filter: brightness(.3) !important;
+	-moz-filter: brightness(.3) !important;
+	-o-filter: brightness(.3) !important;
+	-ms-filter: brightness(.3) !important;
+	filter: brightness(.3) !important;
+  -webkit-transition: -webkit-filter 100ms linear;
+  transition: filter 100ms linear;
+}
+
+.dim_8 .backgrounds {
+	-webkit-filter: brightness(.8) !important;
+	-moz-filter: brightness(.8) !important;
+	-o-filter: brightness(.8) !important;
+	-ms-filter: brightness(.8) !important;
+	filter: brightness(.8) !important;
+  -webkit-transition: -webkit-filter 100ms linear;
+  transition: filter 100ms linear;
+}
+
+.backgrounds {
+	-webkit-filter: brightness(1) !important;
+	-moz-filter: brightness(1) !important;
+	-o-filter: brightness(1) !important;
+	-ms-filter: brightness(1) !important;
+	filter: brightness(1) !important;
+  -webkit-transition: -webkit-filter 1s linear;
+  transition: filter 1s linear;
+}
+
+/*********************************************
+ * ALLOW FOR DECORATIONS
+ *********************************************/
+.slides {
+	/* puts the slide content above overlays and decorations*/
+	z-index: 10 !important;
+}
+
+footer {
+	display: none !important;
+}
+`;
+
 // TODO: Refactor this quick hack into a Reveal plugin form (it works at least)
 const initDecorations = function(Reveal) {
 
@@ -34,17 +714,17 @@ if (!document.getElementById('black_base_theme'))
   head.appendChild(link);
 }
 
-if (!document.getElementById('nlescCss'))
-{
-  var head  = document.getElementsByTagName('head')[0];
-  var link  = document.createElement('link');
-  link.id   = 'nlescCss';
-  link.rel  = 'stylesheet';
-  link.type = 'text/css';
-  link.href = 'plugin/escience/escience_5.1.0.css';
-  link.media = 'all';
-  head.appendChild(link);
-}
+//if (!document.getElementById('nlescCss'))
+//{
+//  var head  = document.getElementsByTagName('head')[0];
+//  var link  = document.createElement('link');
+//  link.id   = 'nlescCss';
+//  link.rel  = 'stylesheet';
+//  link.type = 'text/css';
+//  link.href = 'plugin/escience/escience_5.1.0.css';
+//  link.media = 'all';
+//  head.appendChild(link);
+//}
 
 if (!document.getElementById('fonts'))
 {
@@ -744,6 +1424,13 @@ const decoration_elements = `
 </svg>
 `;
 
+function insertCss(css) {
+  const style = document.createElement('style');
+  style.type = 'text/css';
+  style.innerHTML = css;
+  document.head.appendChild(style);
+}
+
 function insertDecoration() {
   if ( window.location.search.match( /print-pdf/gi ) ) {
     const backgrounds = document.getElementsByClassName('slide-background');
@@ -763,6 +1450,9 @@ function insertDecoration() {
 }
 
 Reveal.on( 'ready', event => {
+  insertCss(black_css);
+  insertCss(monokai_css);
+  insertCss(escience_css);
   insertDecoration();
 
   /* set events only after reveal is ready */
