@@ -682,6 +682,11 @@ code {
 	z-index: 10 !important;
 }
 
+.speaker-notes {
+	/* puts the slide content above overlays and decorations*/
+	z-index: 3 !important;
+}
+
 footer {
 	display: none !important;
 }
