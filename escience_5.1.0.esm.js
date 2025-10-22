@@ -1508,6 +1508,12 @@ function addDecorations() {
       data_state += " logo blue_overlay touch_pane purple_blob right_e_bottom";
     };
 
+    // title
+    if ( data_state.includes("title"))
+    {
+      data_state += "  blue_overlay yellow_flag yellow_strip purple_half_circle_bottom purple_blob right_e_top";
+    };
+
     // individual elements
 
     // purple overlay
