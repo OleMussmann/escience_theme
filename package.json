@@ -1,11 +1,24 @@
 {
   "name": "escience_theme",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "eScience Center theme for web presentations",
   "type": "module",
-  "main": "index.js",
+  "main": "escience.js",
+  "exports": {
+    ".": "./escience.js",
+    "./escience.css": "./escience.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "escience.js",
+    "escience.css",
+    "NOTICE"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/package.mjs && node test/screenshots.mjs"
+  },
+  "peerDependencies": {
+    "reveal.js": "^5.0.0 || ^6.0.0"
   },
   "repository": {
     "type": "git",
@@ -21,5 +34,11 @@
   "bugs": {
     "url": "https://github.com/OleMussmann/escience_theme/issues"
   },
-  "homepage": "https://github.com/OleMussmann/escience_theme#readme"
+  "homepage": "https://github.com/OleMussmann/escience_theme#readme",
+  "devDependencies": {
+    "pixelmatch": "8.0.0",
+    "playwright-core": "1.65.0",
+    "pngjs": "7.0.0",
+    "reveal.js": "5.2.1"
+  }
 }

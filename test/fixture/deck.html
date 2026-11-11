@@ -1,0 +1,135 @@
+<!doctype html>
+<!--
+  Fixture for test/screenshots.mjs.
+  data-expect-opacity: overlay opacity the current theme must set on this slide.
+  data-baseline-differs: the slide intentionally renders differently from
+  BASELINE_REF, so it is left out of the pixel comparison.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>escience_theme fixture deck</title>
+  <link rel="stylesheet" href="/node_modules/reveal.js/dist/reveal.css">
+  <style>
+    /* Decorations fade over 1s; screenshots need the end state. */
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  </style>
+  <script type="module">
+    // ?variant=baseline loads the pre-0.2.0 single-file plugin, which injects its own CSS.
+    // ?variant=new loads escience.js and the stylesheets the way NEBULA does.
+    const variant = new URLSearchParams(location.search).get('variant') || 'new';
+    const css = variant === 'baseline' ? [] : [
+      '/node_modules/reveal.js/dist/theme/black.css',
+      '/node_modules/reveal.js/plugin/highlight/monokai.css',
+      '/escience.css',
+    ];
+    for (const href of css) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      document.head.appendChild(link);
+    }
+    const { default: Reveal } = await import('/node_modules/reveal.js/dist/reveal.esm.js');
+    const { default: Highlight } = await import('/node_modules/reveal.js/plugin/highlight/highlight.esm.js');
+    const { default: Escience } = await import(
+      variant === 'baseline' ? '/test/output/baseline.esm.js' : '/escience.js');
+    const deck = new Reveal({
+      hash: false, controls: false, progress: false, center: true,
+      transition: 'none', backgroundTransition: 'none',
+      plugins: [Highlight, Escience],
+    });
+    window.deck = deck;
+    await deck.initialize();
+    window.deckReady = true;
+  </script>
+</head>
+<body>
+<div class="reveal">
+  <div class="slides">
+
+    <section data-state="title" data-expect-opacity="1">
+      <h1>Title slide</h1>
+      <p>data-state="title", with a <a href="#">link</a></p>
+    </section>
+
+    <section data-state="standard" data-expect-opacity="1">
+      <h2>Standard, no number</h2>
+      <p>Body text with a <a href="#">link</a> and <code>inline code</code>.</p>
+      <ul><li>First point</li><li>Second point</li></ul>
+      <h4>An h4 heading</h4>
+    </section>
+
+    <section data-state="standard 10" data-expect-opacity="1">
+      <h2>Standard 10</h2>
+      <p>Explicit full opacity.</p>
+    </section>
+
+    <section data-state="standard 6" data-background-image="/test/fixture/bg.svg" data-expect-opacity="0.6">
+      <h2>Standard 6 over an image</h2>
+      <p>Background should show through.</p>
+    </section>
+
+    <section data-state="standard" data-background-image="/test/fixture/bg.svg" data-expect-opacity="0.8" data-baseline-differs>
+      <h2>Standard, no number, over an image</h2>
+      <p>No number over background media: 0.8, image shows through.</p>
+    </section>
+
+    <section data-state="title" data-background-image="/test/fixture/bg.svg" data-expect-opacity="0.8" data-baseline-differs>
+      <h1>Title over an image</h1>
+      <p>Stands in for a background video.</p>
+    </section>
+
+    <section data-state="two_pane" data-expect-opacity="1">
+      <h2>Two pane</h2>
+      <p>Left text with a <a href="#">link</a>.</p>
+    </section>
+
+    <section data-state="about" data-expect-opacity="1">
+      <h2>About</h2>
+      <p>About layout.</p>
+    </section>
+
+    <section data-state="keepintouch" data-expect-opacity="1">
+      <h2>Keep in touch</h2>
+      <p><a href="#">Contact</a></p>
+    </section>
+
+    <section data-state="purple_overlay logo" data-expect-opacity="1">
+      <h2>Purple overlay</h2>
+      <p>With a <a href="#">link</a>.</p>
+    </section>
+
+    <section data-state="standard" data-expect-opacity="1">
+      <h2>Standard with footer</h2>
+      <p>Footer element present.</p>
+      <footer>Footer text</footer>
+    </section>
+
+    <section data-state="standard" data-expect-opacity="1">
+      <h2>Code block</h2>
+      <pre><code class="language-python" data-trim>
+def greet(name: str) -> str:
+    # say hello
+    return f"Hello, {name}!"
+      </code></pre>
+    </section>
+
+    <section data-state="standard" data-background-iframe="about:blank" data-expect-opacity="0.8" data-baseline-differs>
+      <h2>Standard over an iframe</h2>
+      <p>Background media other than images count too.</p>
+    </section>
+
+    <section data-state="title 10" data-background-image="/test/fixture/bg.svg" data-expect-opacity="1">
+      <h1>Title 10 over an image</h1>
+      <p>An explicit number still wins.</p>
+    </section>
+
+    <section>
+      <h2>No data-state</h2>
+      <p>Plain reveal slide.</p>
+    </section>
+
+  </div>
+</div>
+</body>
+</html>
