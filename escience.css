@@ -73,6 +73,19 @@
 .reveal a:hover {
   color: var(--link-color-hover); }
 
+/* escience.js marks each slide with the background its links sit on */
+.reveal section[data-escience-links="on-light"] {
+  --link-color: var(--nlesc-blue);
+  --link-color-hover: var(--nlesc-yellow); }
+
+.reveal section[data-escience-links="on-dark"] {
+  --link-color: var(--nlesc-yellow);
+  --link-color-hover: var(--nlesc-blue); }
+
+.reveal section[data-escience-links="on-blue"] {
+  --link-color: var(--nlesc-yellow);
+  --link-color-hover: var(--nlesc-purple); }
+
 .reveal .roll span:after {
   color: #fff;
   background: var(--nlesc-blue); }
@@ -132,8 +145,215 @@
     background-color: var(--dark-gray); } }
 
 /*********************************************
- * ALLOW FOR DECORATIONS
+ * DECORATIONS
+ *
+ * escience.js inserts one .escience-decorations root per deck (per page in
+ * print view) and sets on it:
+ *   data-show   space-separated names of the decorations to show
+ *   data-logo   color | white | part-white
+ *   --escience-overlay-opacity
+ * Hidden decorations sit outside the slide; shown ones slide or fade in.
+ * The root has no box of its own, so the decorations are positioned
+ * against .reveal (or the print page background).
  *********************************************/
+.escience-decorations { display: contents; }
+
+.escience-decorations > * { position: absolute; z-index: 2; }
+
+/* Full-size overlays, under everything else */
+.escience-purple-overlay,
+.escience-blue-overlay,
+.escience-white-overlay,
+.escience-black-overlay {
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 1s; }
+.escience-purple-overlay { background-color: var(--nlesc-purple); }
+.escience-blue-overlay   { background-color: var(--nlesc-blue); }
+.escience-white-overlay  { background-color: white; }
+.escience-black-overlay  { background-color: black; }
+
+/* Panes */
+.escience-blue-pane-left,
+.escience-blue-pane-right,
+.escience-touch-pane {
+  top: 0;
+  bottom: 0;
+  opacity: 0;
+  transition: opacity 1s; }
+.escience-blue-pane-left  { left: 0; right: 50%; background-color: var(--nlesc-blue); }
+.escience-blue-pane-right { left: 50%; right: 0; background-color: var(--nlesc-blue); }
+.escience-touch-pane {
+  left: 0;
+  right: 66.6%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white; }
+.escience-touch-pane h1 { color: black; text-align: left; }
+
+/* Logo, top left; data-logo picks the variant */
+.escience-logo {
+  top: 1.5vh;
+  left: -12vw;
+  opacity: 0;
+  transition: opacity 1s, left 1s; }
+.escience-logo svg { width: 12vw; }
+
+/* Shapes */
+.escience-yellow-strip {
+  left: -10vw;
+  bottom: 0;
+  width: 10vw;
+  height: 70vh;
+  border-radius: 10vw 10vw 0 0;
+  background-color: var(--nlesc-yellow);
+  transition: left 1s; }
+
+.escience-yellow-flag {
+  left: -10vh;
+  bottom: 5vh;
+  width: 10vh;
+  height: 12vh;
+  border-radius: 0 6vh 6vh 0;
+  z-index: 3;
+  background-color: var(--nlesc-yellow);
+  transition: left 1s, bottom 1s; }
+.escience-yellow-flag svg { position: absolute; height: 10vh; margin: 1vh 0; }
+
+.escience-purple-half-circle-top {
+  left: 0;
+  top: -17vw;
+  width: 34vw;
+  height: 17vw;
+  border-radius: 0 0 20vw 20vw;
+  background-color: var(--nlesc-purple);
+  transition: top 1s; }
+
+.escience-purple-half-circle-bottom {
+  left: 0;
+  bottom: -10vw;
+  width: 20vw;
+  height: 10vw;
+  border-radius: 20vw 20vw 0 0;
+  background-color: var(--nlesc-purple);
+  transition: bottom 1s; }
+.escience-purple-half-circle-bottom svg { position: absolute; bottom: 2vw; left: 6vw; width: 8vw; }
+
+.escience-purple-strip-bottom {
+  right: calc(50% + 17vw);
+  bottom: -10vw;
+  width: 16vw;
+  height: 10vw;
+  border-radius: 20vw 20vw 0 0;
+  background-color: var(--nlesc-purple);
+  transition: bottom 1s; }
+
+.escience-yellow-half-strip {
+  right: 50%;
+  bottom: -25vw;
+  width: 17vw;
+  height: 25vw;
+  border-radius: 20vw 0 0 0;
+  background-color: var(--nlesc-yellow);
+  transition: bottom 1s; }
+
+.escience-purple-blob {
+  /* top right: a long and a short drop, joined by a concave curve */
+  right: 0;
+  top: -50vh;
+  width: 10vw;
+  height: 50vh;
+  border-radius: 0 0 5vw 5vw;
+  background-color: var(--nlesc-purple);
+  transition: top 1s; }
+.escience-purple-blob::before,
+.escience-purple-blob::after {
+  content: "";
+  position: absolute;
+  right: calc(100% - 1px);  /* overlap the long drop by 1px, so no seam shows */
+  background-color: var(--nlesc-purple); }
+.escience-purple-blob::before {
+  /* the short drop; its inner corner continues into the curve */
+  top: 0;
+  width: calc(10vw + 1px);
+  height: 25vh;
+  border-bottom-left-radius: 5vw; }
+.escience-purple-blob::after {
+  /* the curve: a 5vw square below the short drop, cut out around its
+     bottom left corner; the 1px gradient step smooths the edge */
+  top: calc(25vh - 1px);
+  width: calc(5vw + 1px);
+  height: calc(5vw + 1px);
+  background: radial-gradient(circle at 0 100%, transparent 5vw, var(--nlesc-purple) calc(5vw + 1px)); }
+
+.escience-right-e {
+  top: 10vh;
+  right: -4vw;
+  width: 4vw;
+  z-index: 3;
+  transition: right 1s, top 1s; }
+
+/* Footer strip, bottom right; holds the slide's <footer> content */
+.escience-blue-strip {
+  right: 0;
+  bottom: 0;
+  border-radius: 20vw 0 0 0;
+  background-color: var(--nlesc-blue);
+  transform: translateX(100%);
+  transition: transform 1s; }
+.escience-footer {
+  margin: 1vw 1vw 1vw 3vw;
+  text-align: right;
+  line-height: 130%; }
+.reveal .escience-footer a { color: white; text-decoration: underline; }
+.reveal .escience-footer a:hover { color: var(--nlesc-purple); }
+
+/* Shown */
+[data-show~="purple_overlay"] .escience-purple-overlay,
+[data-show~="blue_overlay"] .escience-blue-overlay,
+[data-show~="white_overlay"] .escience-white-overlay,
+[data-show~="black_overlay"] .escience-black-overlay {
+  opacity: var(--escience-overlay-opacity, 1); }
+
+[data-show~="blue_pane_left"] .escience-blue-pane-left,
+[data-show~="blue_pane_right"] .escience-blue-pane-right,
+[data-show~="touch_pane"] .escience-touch-pane { opacity: 1; }
+
+[data-show~="logo"] .escience-logo { left: 3vw; }
+[data-logo="color"] .escience-logo-color,
+[data-logo="white"] .escience-logo-white,
+[data-logo="part-white"] .escience-logo-part-white { opacity: 1; }
+
+[data-show~="yellow_strip"] .escience-yellow-strip { left: 0; }
+[data-show~="yellow_flag"] .escience-yellow-flag { left: 0; }
+[data-show~="purple_half_circle_bottom"] .escience-yellow-flag { bottom: 20vh; }
+[data-show~="purple_half_circle_top"] .escience-purple-half-circle-top { top: 0; }
+[data-show~="purple_half_circle_bottom"] .escience-purple-half-circle-bottom { bottom: 0; }
+[data-show~="purple_strip_bottom"] .escience-purple-strip-bottom { bottom: 0; }
+[data-show~="yellow_half_strip"] .escience-yellow-half-strip { bottom: 0; }
+[data-show~="purple_blob"] .escience-purple-blob { top: 0; }
+[data-show~="right_e_top"] .escience-right-e { top: 10vh; right: 0; }
+[data-show~="right_e_bottom"] .escience-right-e { top: 60vh; right: 0; }
+[data-show~="footer"] .escience-blue-strip { transform: none; }
+
+/* clear_background moves overlays and panes away, e.g. for an interactive
+   background iframe */
+[data-show~="clear_background"] :is(.escience-purple-overlay, .escience-blue-overlay,
+  .escience-white-overlay, .escience-black-overlay, .escience-blue-pane-left,
+  .escience-blue-pane-right, .escience-touch-pane) {
+  transform: translateY(100vh); }
+
+/*********************************************
+ * SLIDE CONTENT ABOVE DECORATIONS
+ *********************************************/
+/* print view: each page holds its background (with decorations), slide,
+   notes and slide number side by side */
+html.reveal-print .reveal .pdf-page > :is(section, .speaker-notes-pdf, .slide-number-pdf) {
+  z-index: 10;
+}
+
 .slides {
 	/* puts the slide content above overlays and decorations*/
 	z-index: 10 !important;

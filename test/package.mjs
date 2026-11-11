@@ -8,8 +8,12 @@ import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const { default: Escience } = await import('escience_theme');
-assert.equal(Escience.id, 'Escience');
-assert.equal(typeof Escience.init, 'function');
+// A plugin factory: reveal.js calls it once per deck.
+assert.equal(typeof Escience, 'function');
+const plugin = Escience();
+assert.equal(plugin.id, 'Escience');
+assert.equal(typeof plugin.init, 'function');
+assert.equal(typeof plugin.destroy, 'function');
 
 const css = fileURLToPath(import.meta.resolve('escience_theme/escience.css'));
 assert.ok(existsSync(css), `missing ${css}`);

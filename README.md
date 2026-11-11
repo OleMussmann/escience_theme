@@ -49,15 +49,28 @@ Set the look of a slide with `data-state`, e.g. in reveal.js markdown:
 <!-- .slide: data-state="standard" -->
 ```
 
-Presets: `standard`, `title`, `two_pane`, `about`, `keepintouch`. Single
-decorations (`white_overlay`, `blue_overlay`, `purple_overlay`,
-`black_overlay`, `logo`, `yellow_flag`, …) can be combined freely.
+`data-state` is a space-separated list of words. Presets: `standard`,
+`title`, `two_pane`, `about`, `keepintouch` (or `touch`). Single decorations
+can be combined freely with them and with each other: `white_overlay`,
+`blue_overlay`, `purple_overlay`, `black_overlay`, `logo`, `yellow_flag`,
+`yellow_strip`, `blue_pane_left`, `blue_pane_right`, `touch_pane`,
+`purple_half_circle_top`, `purple_half_circle_bottom`, `purple_strip_bottom`,
+`yellow_half_strip`, `purple_blob`, `right_e_top`, `right_e_bottom`, and
+`clear_background` (moves overlays and panes away, e.g. for an interactive
+background iframe). A slide without `data-state` shows no decorations.
+
+A `<footer>` element in a slide is shown in a blue strip at the bottom right.
 
 A number from 0 to 10 sets the overlay opacity in tenths: `standard 6` lets a
 background image show through, `standard 10` is opaque. Without a number the
 overlay is opaque, unless the slide has a background image, video or iframe
 (`data-background-image`, `-video`, `-iframe`); then it is 0.8, so the
 background stays faintly visible.
+
+## Printing
+
+Decks print with reveal.js's print view (`?print-pdf` in the URL, then print
+to PDF from the browser). Every page gets the decorations of its own slide.
 
 ## Development
 
@@ -71,15 +84,21 @@ the executable), screenshots every slide and overview mode, and compares them
 with the theme at `BASELINE_REF` (default `v0.2.0`; a revision before 0.2.0,
 such as `1ef0fd0`, loads the old single-file plugin). Each slide must match
 pixel by pixel, and the computed typography (font, weight, style, text
-transform) of every element on it and in its speaker notes must match too.
+transform) of every element on it must match too, as must that of the speaker
+notes panel.
 Screenshots and diffs land in `test/output/`. Set `MAX_DIFF` to allow a number
 of differing pixels per screenshot.
+
+A second pass opens the deck in print view and checks that every page shows
+the decorations, logo, link colours and background classes its slide shows on
+screen, and that no decoration covers the slide's heading.
 
 Fixture slides can declare what they expect from the current theme:
 `data-expect-opacity` (overlay opacity), `data-expect-selection` (text
 selection colours), `data-fonts-differ` (elements whose typography may differ
-from the baseline) and `data-baseline-differs` (left out of both comparisons
-because the slide changes on purpose).
+from the baseline) and `data-baseline-differs` (left out of both comparisons because the slide
+changes on purpose). `data-overview-max-diff` on `.reveal` allows pixels to
+differ in the overview screenshot.
 
 ## License
 

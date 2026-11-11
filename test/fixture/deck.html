@@ -5,6 +5,9 @@
   data-expect-selection: computed ::selection colours of the first <p>.
   data-fonts-differ: elements (tag.class) whose typography may differ from
   BASELINE_REF, e.g. "pre.code-wrapper".
+  On .reveal, data-overview-max-diff: number of pixels that may differ from
+  BASELINE_REF in the overview screenshot, which shows every slide's content
+  (not the decorations).
   data-baseline-differs: the slide intentionally renders differently from
   BASELINE_REF, so it is left out of the pixel and typography comparison.
 -->
@@ -41,7 +44,7 @@
     const { default: Escience } = await import(
       variant === 'baseline' ? '/test/output/baseline.esm.js' : '/escience.js');
     const deck = new Reveal({
-      hash: false, controls: false, progress: false, center: true, showNotes: true,
+      hash: false, controls: false, progress: false, center: true,
       transition: 'none', backgroundTransition: 'none',
       plugins: [Highlight, Escience],
     });
@@ -51,7 +54,7 @@
   </script>
 </head>
 <body>
-<div class="reveal">
+<div class="reveal" data-overview-max-diff="200">
   <div class="slides">
 
     <section data-state="title" data-expect-opacity="1">
@@ -150,8 +153,25 @@ def greet(name: str) -> str:
     </section>
 
     <section>
+      <section data-state="two_pane" data-expect-opacity="1">
+        <h2>Stack top</h2>
+        <p>Top of a vertical stack.</p>
+      </section>
+      <section data-state="about" data-expect-opacity="1">
+        <h2>Stack below</h2>
+        <ul><li class="fragment">Fragment one</li><li class="fragment">Fragment two</li></ul>
+      </section>
+    </section>
+
+    <section data-state="standard" data-expect-opacity="1" data-baseline-differs>
+      <h2>Footer with a link</h2>
+      <p>Body <a href="#">link</a>; the footer link is white on the blue strip.</p>
+      <footer>Source: <a href="#">example.org</a></footer>
+    </section>
+
+    <section data-baseline-differs>
       <h2>No data-state</h2>
-      <p>Plain reveal slide.</p>
+      <p>Plain reveal slide, no decorations.</p>
     </section>
 
   </div>
