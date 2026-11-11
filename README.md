@@ -68,10 +68,18 @@ npm test
 
 `npm test` renders `test/fixture/deck.html` in Chromium (`CHROME` overrides
 the executable), screenshots every slide and overview mode, and compares them
-pixel by pixel with the theme at `BASELINE_REF` (default `1ef0fd0`, the last
-single-file version). Screenshots and diffs land in `test/output/`. Set
-`MAX_DIFF` to allow a number of differing pixels per screenshot, e.g. when a
-change is intentional.
+with the theme at `BASELINE_REF` (default `v0.2.0`; a revision before 0.2.0,
+such as `1ef0fd0`, loads the old single-file plugin). Each slide must match
+pixel by pixel, and the computed typography (font, weight, style, text
+transform) of every element on it and in its speaker notes must match too.
+Screenshots and diffs land in `test/output/`. Set `MAX_DIFF` to allow a number
+of differing pixels per screenshot.
+
+Fixture slides can declare what they expect from the current theme:
+`data-expect-opacity` (overlay opacity), `data-expect-selection` (text
+selection colours), `data-fonts-differ` (elements whose typography may differ
+from the baseline) and `data-baseline-differs` (left out of both comparisons
+because the slide changes on purpose).
 
 ## License
 

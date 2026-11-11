@@ -5,8 +5,10 @@
 // with data-expect-opacity must get that overlay opacity from the new theme.
 //
 // Environment:
-//   BASELINE_REF  git revision whose escience_6.0.0.esm.js is the baseline
-//                 (default 1ef0fd0, the last single-file release)
+//   BASELINE_REF  git revision of the theme to compare against (default v0.2.0).
+//                 Revisions from 0.2.0 on ship escience.js + escience.css;
+//                 older ones (e.g. 1ef0fd0) are the single file
+//                 escience_6.0.0.esm.js that injects its own CSS.
 //   CHROME        browser executable (default: `chromium` on PATH)
 //   MAX_DIFF      pixels allowed to differ per screenshot (default 0)
 //
@@ -23,15 +25,24 @@ import { PNG } from 'pngjs';
 
 const root = resolve(fileURLToPath(import.meta.url), '../..');
 const out = join(root, 'test/output');
-const baselineRef = process.env.BASELINE_REF || '1ef0fd0';
+const baselineRef = process.env.BASELINE_REF || 'v0.2.0';
 const maxDiff = Number(process.env.MAX_DIFF || 0);
 const chrome = process.env.CHROME
   || execFileSync('sh', ['-c', 'command -v chromium'], { encoding: 'utf8' }).trim();
 
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
-writeFileSync(join(out, 'baseline.esm.js'),
-  execFileSync('git', ['-C', root, 'show', `${baselineRef}:escience_6.0.0.esm.js`]));
+const gitShow = path => execFileSync('git', ['-C', root, 'show', `${baselineRef}:${path}`],
+  { stdio: ['ignore', 'pipe', 'ignore'] });
+let baselineLayout;
+try {
+  writeFileSync(join(out, 'baseline.esm.js'), gitShow('escience.js'));
+  writeFileSync(join(out, 'baseline.css'), gitShow('escience.css'));
+  baselineLayout = 'split';
+} catch {
+  writeFileSync(join(out, 'baseline.esm.js'), gitShow('escience_6.0.0.esm.js'));
+  baselineLayout = 'single';
+}
 
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript',
   '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png',
@@ -57,7 +68,7 @@ async function shoot(variant) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
   page.on('pageerror', e => errors.push(`${variant}: ${e.message}`));
   page.on('response', r => { if (r.status() >= 400) errors.push(`${variant}: HTTP ${r.status()} ${r.url()}`); });
-  await page.goto(`${base}?variant=${variant}`);
+  await page.goto(`${base}?variant=${variant}&layout=${baselineLayout}`);
   await page.waitForFunction(() => window.deckReady === true);
   await page.evaluate(() => document.fonts.ready);
   const count = await page.evaluate(() => window.deck.getTotalSlides());
@@ -75,9 +86,29 @@ async function shoot(variant) {
         .map(id => Number(document.getElementById(id).style.opacity || 0));
       return {
         expect: slide.dataset.expectOpacity,
+        expectSelection: slide.dataset.expectSelection,
+        fontsDiffer: (slide.dataset.fontsDiffer || '').split(/\s+/).filter(Boolean),
         differs: slide.hasAttribute('data-baseline-differs'),
         opacity: Math.max(...overlays),
       };
+    });
+    // Typography of everything on the slide (and its speaker notes), compared
+    // with the baseline below; screenshots miss elements that are not shown.
+    slides[name].fonts = await page.evaluate(() => {
+      const els = [...document.querySelectorAll('.slides section.present *, .speaker-notes *, .speaker-notes')];
+      return els.map(e => {
+        const s = getComputedStyle(e);
+        // Quotes and a trailing generic fallback (", sans-serif") are ignored.
+        const family = s.fontFamily.replaceAll('"', '')
+          .replace(/, (serif|sans-serif|monospace|system-ui)$/, '');
+        return `${e.tagName.toLowerCase()}${e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/).join('.') : ''}: ${family} ${s.fontWeight} ${s.fontStyle} ${s.textTransform}`;
+      });
+    });
+    slides[name].selection = await page.evaluate(() => {
+      const p = document.querySelector('.slides section.present p');
+      if (!p) return undefined;
+      const s = getComputedStyle(p, '::selection');
+      return `${s.color} on ${s.backgroundColor}`;
     });
     // Link colour at rest and on hover; the overlays switch it via CSS variables.
     const link = page.locator('.slides section.present a').first();
@@ -119,7 +150,21 @@ for (const name of current.names) {
     if (!ok) failed = true;
     console.log(`${ok ? 'ok  ' : 'FAIL'} ${name.padEnd(8)} link ${slide.link}${ok ? '' : ` (baseline ${was})`}`);
   }
+  if (slide?.expectSelection !== undefined) {
+    const ok = slide.selection === slide.expectSelection;
+    if (!ok) failed = true;
+    console.log(`${ok ? 'ok  ' : 'FAIL'} ${name.padEnd(8)} selection ${slide.selection}${ok ? '' : ` (expected ${slide.expectSelection})`}`);
+  }
   if (slide?.differs) { console.log(`skip ${name.padEnd(8)} differs from baseline on purpose`); continue; }
+  if (slide?.fonts) {
+    const was = baseline.slides[name].fonts;
+    const allowed = f => slide.fontsDiffer.some(sel => f.startsWith(sel + ':'));
+    const changed = slide.fonts.map((f, i) => f === was[i] || allowed(f) ? null : `    ${was[i]}\n -> ${f}`).filter(Boolean);
+    if (slide.fonts.length !== was.length) changed.push(`    ${was.length} elements -> ${slide.fonts.length}`);
+    if (changed.length) failed = true;
+    console.log(`${changed.length ? 'FAIL' : 'ok  '} ${name.padEnd(8)} fonts of ${slide.fonts.length} elements`);
+    for (const c of changed.slice(0, 8)) console.log(c);
+  }
   const a = PNG.sync.read(readFileSync(join(out, 'baseline', `${name}.png`)));
   const b = PNG.sync.read(readFileSync(join(out, 'new', `${name}.png`)));
   const diff = new PNG({ width: a.width, height: a.height });

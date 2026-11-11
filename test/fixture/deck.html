@@ -2,8 +2,11 @@
 <!--
   Fixture for test/screenshots.mjs.
   data-expect-opacity: overlay opacity the current theme must set on this slide.
+  data-expect-selection: computed ::selection colours of the first <p>.
+  data-fonts-differ: elements (tag.class) whose typography may differ from
+  BASELINE_REF, e.g. "pre.code-wrapper".
   data-baseline-differs: the slide intentionally renders differently from
-  BASELINE_REF, so it is left out of the pixel comparison.
+  BASELINE_REF, so it is left out of the pixel and typography comparison.
 -->
 <html lang="en">
 <head>
@@ -15,13 +18,17 @@
     *, *::before, *::after { transition: none !important; animation: none !important; }
   </style>
   <script type="module">
-    // ?variant=baseline loads the pre-0.2.0 single-file plugin, which injects its own CSS.
     // ?variant=new loads escience.js and the stylesheets the way NEBULA does.
-    const variant = new URLSearchParams(location.search).get('variant') || 'new';
-    const css = variant === 'baseline' ? [] : [
+    // ?variant=baseline loads the theme from BASELINE_REF (test/output/):
+    // with &layout=split the same way, with &layout=single the pre-0.2.0
+    // single-file plugin, which injects its own CSS.
+    const params = new URLSearchParams(location.search);
+    const variant = params.get('variant') || 'new';
+    const single = variant === 'baseline' && params.get('layout') === 'single';
+    const css = single ? [] : [
       '/node_modules/reveal.js/dist/theme/black.css',
       '/node_modules/reveal.js/plugin/highlight/monokai.css',
-      '/escience.css',
+      variant === 'baseline' ? '/test/output/baseline.css' : '/escience.css',
     ];
     for (const href of css) {
       const link = document.createElement('link');
@@ -34,7 +41,7 @@
     const { default: Escience } = await import(
       variant === 'baseline' ? '/test/output/baseline.esm.js' : '/escience.js');
     const deck = new Reveal({
-      hash: false, controls: false, progress: false, center: true,
+      hash: false, controls: false, progress: false, center: true, showNotes: true,
       transition: 'none', backgroundTransition: 'none',
       plugins: [Highlight, Escience],
     });
@@ -105,7 +112,7 @@
       <footer>Footer text</footer>
     </section>
 
-    <section data-state="standard" data-expect-opacity="1">
+    <section data-state="standard" data-expect-opacity="1" data-fonts-differ="pre.code-wrapper">
       <h2>Code block</h2>
       <pre><code class="language-python" data-trim>
 def greet(name: str) -> str:
@@ -122,6 +129,24 @@ def greet(name: str) -> str:
     <section data-state="title 10" data-background-image="/test/fixture/bg.svg" data-expect-opacity="1">
       <h1>Title 10 over an image</h1>
       <p>An explicit number still wins.</p>
+    </section>
+
+    <section data-state="standard" data-expect-opacity="1"
+             data-expect-selection="rgb(255, 255, 255) on rgb(56, 3, 57)">
+      <h3>Typography h3</h3>
+      <p>Text with <strong>strong</strong>, <em>em</em>, <code>code</code> and <a href="#">a link</a>.</p>
+      <h4>Heading h4</h4>
+      <h5>Heading h5</h5>
+      <h6>Heading h6</h6>
+      <table><tr><th>Head</th><th>Cell</th></tr><tr><td>one</td><td><em>two</em></td></tr></table>
+      <blockquote>A quote</blockquote>
+      <aside class="notes">Speaker notes with <strong>bold</strong> text.</aside>
+    </section>
+
+    <section data-state="standard" data-expect-opacity="1" data-baseline-differs>
+      <h2>Inline font weight</h2>
+      <div style="font-weight: 700">This div asks for bold.</div>
+      <p>Inline styles set the weight of any element.</p>
     </section>
 
     <section>
