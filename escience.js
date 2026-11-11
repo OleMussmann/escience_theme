@@ -11,8 +11,9 @@
 //   --escience-overlay-opacity
 //
 // On screen there is one root in the .reveal element, updated on every slide
-// change. In print view (?print-pdf) every page gets its own root, set once
-// from that page's slide.
+// change. In the overview every slide background gets its own root while the
+// overview is open, so the thumbnails look like their slides. In print view
+// (?print-pdf) every page gets its own root, set once from that page's slide.
 
 const LOGGING = false;
 
@@ -88,16 +89,47 @@ function render(root, slide) {
   log(`decorations: ${root.dataset.show} (logo ${state.logo}, opacity ${state.opacity})`);
 }
 
+// In every .stepper inside `scope`, the last shown .step (a plain one, or a
+// fragment that is visible) gets the class current-step; escience.css
+// highlights it and shows only its details.
+function markSteps(scope) {
+  for (const stepper of scope.querySelectorAll('.stepper')) {
+    const steps = [...stepper.querySelectorAll('.step')];
+    const current = steps.filter(s => !s.classList.contains('fragment') || s.classList.contains('visible')).at(-1);
+    for (const step of steps) step.classList.toggle('current-step', step === current);
+  }
+}
+
+let template;
+
 function createRoot(parent) {
-  parent.insertAdjacentHTML('afterbegin', DECORATIONS);
-  return parent.firstElementChild;
+  template ??= Object.assign(document.createElement('template'), { innerHTML: DECORATIONS });
+  const root = template.content.firstElementChild.cloneNode(true);
+  parent.prepend(root);
+  return root;
 }
 
 const Escience = () => {
   let deck, root;
 
-  const update = () => { if (!deck.isOverview()) render(root, deck.getCurrentSlide()); };
-  const hide = () => { root.dataset.show = ''; };
+  const update = () => {
+    markSteps(deck.getCurrentSlide());
+    if (!deck.isOverview()) render(root, deck.getCurrentSlide());
+  };
+  const ready = () => { markSteps(deck.getRevealElement()); update(); };
+  const steps = () => markSteps(deck.getCurrentSlide());
+
+  const thumbnailRoots = () => deck.getRevealElement().querySelectorAll('.backgrounds .escience-decorations');
+  const showOverview = () => {
+    root.dataset.show = '';
+    for (const slide of deck.getSlides()) {
+      if (slide.slideBackgroundElement) render(createRoot(slide.slideBackgroundElement), slide);
+    }
+  };
+  const hideOverview = () => {
+    for (const thumbnail of thumbnailRoots()) thumbnail.remove();
+    update();
+  };
 
   return {
     id: 'Escience',
@@ -108,23 +140,29 @@ const Escience = () => {
           for (const page of deck.getRevealElement().querySelectorAll('.pdf-page')) {
             const slide = page.querySelector('section');
             const background = page.querySelector('.slide-background');
+            markSteps(page);
             if (slide && background) render(createRoot(background), slide);
           }
         });
         return;
       }
       root = createRoot(deck.getRevealElement());
-      deck.on('ready', update);
+      deck.on('ready', ready);
       deck.on('slidechanged', update);
-      deck.on('overviewshown', hide);
-      deck.on('overviewhidden', update);
+      deck.on('fragmentshown', steps);
+      deck.on('fragmenthidden', steps);
+      deck.on('overviewshown', showOverview);
+      deck.on('overviewhidden', hideOverview);
     },
     destroy: () => {
       if (!root) return;
-      deck.off('ready', update);
+      deck.off('ready', ready);
       deck.off('slidechanged', update);
-      deck.off('overviewshown', hide);
-      deck.off('overviewhidden', update);
+      deck.off('fragmentshown', steps);
+      deck.off('fragmenthidden', steps);
+      deck.off('overviewshown', showOverview);
+      deck.off('overviewhidden', hideOverview);
+      for (const thumbnail of thumbnailRoots()) thumbnail.remove();
       root.remove();
     },
   };

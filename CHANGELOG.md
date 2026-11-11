@@ -2,6 +2,14 @@
 
 ## Unreleased (0.3.0)
 
+### Added
+
+- Layout classes: `.columns` (grid with `--columns` and `--gap`), `.card`
+  (`.bordered`, `.highlight`) and `.stepper` (`.step`, `.detail`,
+  `.preview`). See the README. The plugin marks the current step of a
+  stepper with `.current-step`.
+- The overview shows every slide with its own decorations.
+
 ### Changed
 
 - Fonts are set through reveal.js's theme variables (`--r-main-font`,
@@ -60,5 +68,7 @@
   screen.
 - Screenshots are taken without the speaker notes panel, which covered the
   right third of every slide; the notes' typography is checked separately.
-  `data-overview-max-diff` on `.reveal` allows a number of differing pixels
-  in the overview screenshot.
+  `data-overview-differs` on `.reveal` leaves the overview out of the pixel
+  comparison.
+- Steppers are walked fragment by fragment, and overview thumbnails are
+  checked against their slides.

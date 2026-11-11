@@ -118,6 +118,8 @@ async function shoot(variant) {
     if (variant === 'new') {
       signatures.push(await page.evaluate(decorationSignature,
         ['.reveal > .escience-decorations', '.reveal', '.slides section.present:not(.stack)']));
+      signatures.at(-1).show = await page.evaluate(() =>
+        document.querySelector('.reveal > .escience-decorations').dataset.show);
     }
     slides[name] = await page.evaluate(() => {
       const slide = window.deck.getCurrentSlide();
@@ -134,6 +136,12 @@ async function shoot(variant) {
         opacity: Math.max(...overlays),
       };
     });
+    // Vertically centred columns: every child's centre on the same line.
+    slides[name].misaligned = await page.evaluate(() =>
+      [...document.querySelectorAll('.slides section.present .columns.items-center')].flatMap(row => {
+        const centres = [...row.children].map(c => { const r = c.getBoundingClientRect(); return r.top + r.height / 2; });
+        return centres.some(c => Math.abs(c - centres[0]) > 0.5) ? [row.textContent.trim().slice(0, 40)] : [];
+      }));
     // Typography of everything on the slide, compared with the baseline
     // below; screenshots miss elements that are not shown.
     slides[name].fonts = await page.evaluate(() => {
@@ -179,17 +187,65 @@ async function shoot(variant) {
     deck.configure({ showNotes: false });
     return fonts;
   });
+  // Steppers: walk every fragment; exactly the last shown step is current
+  // (blue border) and only its details are displayed.
+  const stepper = variant === 'new' ? await page.evaluate(async () => {
+    const deck = window.deck, problems = [], blue = 'rgb(0, 157, 221)';
+    let states = 0;
+    const wait = () => new Promise(r => setTimeout(r, 50));
+    for (const slide of deck.getSlides().filter(s => s.querySelector('.stepper'))) {
+      const check = label => {
+        label = `"${slide.querySelector('h2').textContent}" ${label}`;
+        for (const stepper of slide.querySelectorAll('.stepper')) {
+          const steps = [...stepper.querySelectorAll('.step')];
+          const shown = steps.filter(s => !s.classList.contains('fragment') || s.classList.contains('visible'));
+          const current = shown.at(-1);
+          const highlighted = steps.filter(s => getComputedStyle(s).borderTopColor === blue);
+          const owner = d => d.closest('.step') || d.previousElementSibling;
+          const displayed = [...stepper.querySelectorAll('.detail')].filter(d => getComputedStyle(d).display !== 'none');
+          if (highlighted.length !== 1 || highlighted[0] !== current) problems.push(`${label}: ${highlighted.length} highlighted, not the current step`);
+          if (displayed.some(d => owner(d) !== current)) problems.push(`${label}: a detail of another step is displayed`);
+          if (stepper.querySelectorAll('.detail').length && !displayed.length) problems.push(`${label}: no detail displayed`);
+          const preview = stepper.classList.contains('preview');
+          for (const s of steps.filter(s => !shown.includes(s))) {
+            const o = Number(getComputedStyle(s).opacity);
+            if (preview ? Math.abs(o - 0.35) > 0.01 : o !== 0) problems.push(`${label}: upcoming step opacity ${o}`);
+          }
+        }
+        states++;
+      };
+      const { h, v } = deck.getIndices(slide);
+      deck.slide(h, v, -1);
+      await wait(); check('start');
+      for (let n = 1; deck.nextFragment(); n++) { await wait(); check(`forward ${n}`); }
+      for (let n = 1; deck.prevFragment(); n++) { await wait(); check(`back ${n}`); }
+      // leave the slide and come back from the next one: all fragments shown
+      while (deck.nextFragment()) await wait();
+      deck.next(); await wait(); deck.prev(); await wait();
+      if (deck.getCurrentSlide() === slide) check('re-entered from the next slide');
+    }
+    return { states, problems };
+  }) : undefined;
+
+  // Overview: every thumbnail shows its slide's decorations; closing the
+  // overview removes them again.
   await page.evaluate(() => window.deck.toggleOverview(true));
   await page.waitForTimeout(500);
   await page.screenshot({ path: join(dir, 'overview.png') });
   names.push('overview');
-  slides.overview = { maxDiff: await page.evaluate(() => {
-    const n = document.querySelector('.reveal').dataset.overviewMaxDiff;
-    return n === undefined ? undefined : Number(n);
-  }) };
+  slides.overview = { differs: await page.evaluate(() => document.querySelector('.reveal').hasAttribute('data-overview-differs')) };
+  let overview;
+  if (variant === 'new') {
+    const thumbnails = await page.evaluate(() => window.deck.getSlides().map(s =>
+      s.slideBackgroundElement?.querySelector(':scope > .escience-decorations')?.dataset.show ?? null));
+    await page.evaluate(() => window.deck.toggleOverview(false));
+    await page.waitForTimeout(100);
+    const left = await page.evaluate(() => document.querySelectorAll('.backgrounds .escience-decorations').length);
+    overview = { thumbnails, left };
+  }
   const styleTags = await page.evaluate(() => document.head.querySelectorAll('style').length);
   await page.close();
-  return { names, slides, styleTags, signatures, notesFonts };
+  return { names, slides, styleTags, signatures, notesFonts, stepper, overview };
 }
 
 // Print view of the new theme: one signature per PDF page.
@@ -227,11 +283,15 @@ for (const name of current.names) {
     if (!ok) failed = true;
     console.log(`${ok ? 'ok  ' : 'FAIL'} ${name.padEnd(8)} overlay opacity ${slide.opacity} (expected ${slide.expect})`);
   }
-  if (slide?.link !== undefined) {
+  if (slide?.link !== undefined && !slide.differs) {
     const was = baseline.slides[name].link;
     const ok = slide.link === was;
     if (!ok) failed = true;
     console.log(`${ok ? 'ok  ' : 'FAIL'} ${name.padEnd(8)} link ${slide.link}${ok ? '' : ` (baseline ${was})`}`);
+  }
+  if (slide?.misaligned?.length) {
+    failed = true;
+    console.log(`FAIL ${name.padEnd(8)} items-center columns not aligned: ${slide.misaligned.join(' | ')}`);
   }
   if (slide?.expectSelection !== undefined) {
     const ok = slide.selection === slide.expectSelection;
@@ -253,7 +313,7 @@ for (const name of current.names) {
   const diff = new PNG({ width: a.width, height: a.height });
   const n = pixelmatch(a.data, b.data, diff.data, a.width, a.height, { threshold: 0.1 });
   if (n > 0) writeFileSync(join(out, 'diff', `${name}.png`), PNG.sync.write(diff));
-  const ok = n <= (slide?.maxDiff ?? maxDiff);
+  const ok = n <= maxDiff;
   if (!ok) failed = true;
   console.log(`${ok ? 'ok  ' : 'DIFF'} ${name.padEnd(8)} ${n} px`);
 }
@@ -263,6 +323,21 @@ for (const name of current.names) {
   if (!ok) failed = true;
   console.log(`${ok ? 'ok  ' : 'FAIL'} notes    fonts of ${current.notesFonts.length} elements`
     + (ok ? '' : `\n    baseline: ${baseline.notesFonts.join(' | ')}\n    new:      ${current.notesFonts.join(' | ')}`));
+}
+{
+  const { states, problems } = current.stepper;
+  if (problems.length) failed = true;
+  console.log(`${problems.length ? 'FAIL' : 'ok  '} stepper  ${states} fragment states`);
+  for (const p of problems) console.log(`    ${p}`);
+}
+{
+  const { thumbnails, left } = current.overview;
+  const wrong = thumbnails.map((show, i) => show === current.signatures[i].show ? null
+    : `    slide ${i}: thumbnail "${show}", screen "${current.signatures[i].show}"`).filter(Boolean);
+  const ok = !wrong.length && left === 0;
+  if (!ok) failed = true;
+  console.log(`${ok ? 'ok  ' : 'FAIL'} overview ${thumbnails.length} thumbnails decorated like their slides, ${left} left after closing`);
+  for (const w of wrong) console.log(w);
 }
 const screenByKey = Object.fromEntries(current.signatures.map(s => [s.key, s]));
 let printOk = print.length > 0;

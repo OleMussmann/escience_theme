@@ -67,10 +67,48 @@ overlay is opaque, unless the slide has a background image, video or iframe
 (`data-background-image`, `-video`, `-iframe`); then it is 0.8, so the
 background stays faintly visible.
 
+## Layout classes
+
+For use inside slides, e.g. as HTML in reveal.js markdown.
+
+**`.columns`** lays its children out in a grid: two equal columns by default,
+or any `grid-template-columns` value in `--columns`. Further children wrap
+into new rows; `--gap` sets the gap. reveal.js's own `.items-center`,
+`.items-start` etc. align the columns vertically.
+
+```html
+<div class="columns items-center" style="--columns: 7fr 3fr">
+  <div>text</div>
+  <img src="photo.jpg">
+</div>
+```
+
+**`.card`** is a padded light-gray box with dark text. `.card.bordered` has a
+border only and keeps the slide's colours; `.card.highlight` has a blue
+border. A card inside a filled card is white.
+
+**`.stepper`** shows steps one by one. Its `.step` elements are the steps: the
+first one plain, the later ones fragments. The current step (the last one
+shown; the plugin marks it with `.current-step`) gets a blue border if it has
+a border, e.g. as `.step.card`, and only
+its `.detail` is displayed: the `.detail` right after the step, or one inside
+it. `.stepper.preview` shows upcoming steps faded instead of hidden.
+`--columns` and `--gap` on the stepper apply to its `.columns` rows.
+
+```html
+<div class="stepper" style="--columns: 7em repeat(2, 1fr)">
+  <div class="step card columns"><strong>Create</strong><span>Generate</span><span>Summarize</span></div>
+  <div class="detail columns"><em>e.g.</em><span>Text, code</span><span>Papers</span></div>
+  <div class="step card columns fragment"><strong>Find</strong><span>Search</span><span>Predict</span></div>
+  <div class="detail columns"><em>e.g.</em><span>Documents</span><span>Outcomes</span></div>
+</div>
+```
+
 ## Printing
 
 Decks print with reveal.js's print view (`?print-pdf` in the URL, then print
 to PDF from the browser). Every page gets the decorations of its own slide.
+The overview (Esc) shows every slide with its decorations as well.
 
 ## Development
 
@@ -89,6 +127,9 @@ notes panel.
 Screenshots and diffs land in `test/output/`. Set `MAX_DIFF` to allow a number
 of differing pixels per screenshot.
 
+Every stepper is walked fragment by fragment (exactly the last shown step is
+current, only its details are displayed), and in the overview every thumbnail
+must carry its slide's decorations, removed again when the overview closes.
 A second pass opens the deck in print view and checks that every page shows
 the decorations, logo, link colours and background classes its slide shows on
 screen, and that no decoration covers the slide's heading.
@@ -97,8 +138,8 @@ Fixture slides can declare what they expect from the current theme:
 `data-expect-opacity` (overlay opacity), `data-expect-selection` (text
 selection colours), `data-fonts-differ` (elements whose typography may differ
 from the baseline) and `data-baseline-differs` (left out of both comparisons because the slide
-changes on purpose). `data-overview-max-diff` on `.reveal` allows pixels to
-differ in the overview screenshot.
+changes on purpose). `data-overview-differs` on `.reveal` leaves the overview
+screenshot out of the pixel comparison.
 
 ## License
 

@@ -127,6 +127,80 @@
   transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985); }
 
 /*********************************************
+ * LAYOUT
+ *
+ * .columns   grid, two equal columns unless --columns gives a
+ *            grid-template-columns value ("7fr 3fr", "repeat(3, 1fr)");
+ *            further children wrap into new rows. --gap sets the gap.
+ *            Combine with reveal.js's .items-center etc. for alignment.
+ * .card      padded box in light gray, with even spacing between its
+ *            children; .bordered: border only; .highlight: blue border.
+ *            A card inside a filled card is white.
+ * .stepper   steps that appear one by one: .step elements, the first one
+ *            plain, later ones fragments. The current step (the last one
+ *            shown, marked .current-step by escience.js) gets a blue
+ *            border if it has one (e.g. .step.card), and
+ *            only its .detail is shown: the .detail right after the step or
+ *            inside it. When the steps are cards, the stepper's other rows
+ *            line up with the cards' content. .preview shows upcoming steps
+ *            faded instead of hidden. --columns and --gap on the stepper
+ *            apply to its .columns rows.
+ *
+ * --columns and --gap apply only to the element they are set on, so a
+ * nested .columns starts from the defaults again.
+ *********************************************/
+@property --columns { syntax: "*"; inherits: false; }
+@property --gap { syntax: "*"; inherits: false; }
+
+.reveal .columns {
+  display: grid;
+  grid-template-columns: var(--columns, repeat(2, minmax(0, 1fr)));
+  gap: var(--gap, .5em);
+}
+
+.reveal .card {
+  padding: .4em .6em;  /* the stepper's row alignment below uses .6em */
+  border: 2px solid var(--light-gray);
+  border-radius: 8px;
+  background-color: var(--light-gray);
+  color: #222;
+  text-align: start;
+  --r-heading-color: #222;
+  --link-color: var(--nlesc-blue);
+  --link-color-hover: var(--nlesc-purple);
+}
+.reveal .card > * { margin-block: 0; }
+.reveal .card:not(.columns) > * + * { margin-top: .4em; }
+.reveal .card:not(.bordered) .card:not(.bordered) {
+  border-color: white;
+  background-color: white;
+}
+.reveal .card.bordered {
+  background-color: transparent;
+  color: inherit;
+  --r-heading-color: inherit;
+  --link-color: inherit;
+  --link-color-hover: inherit;
+}
+.reveal .card.highlight { border-color: var(--nlesc-blue); }
+
+.reveal .stepper { text-align: start; }
+.reveal .stepper > * { --columns: inherit; --gap: inherit; }
+.reveal .stepper > .step.card { margin-block: .4em; }
+.reveal .stepper:has(> .step.card) > :not(.step) { padding-inline: calc(.6em + 2px); }
+
+/* escience.js marks the current step with .current-step */
+.reveal .stepper .step.current-step { border-color: var(--nlesc-blue); }
+.reveal .stepper .step:not(.current-step) + .detail,
+.reveal .stepper .step:not(.current-step) .detail {
+  display: none;
+}
+.reveal .slides section .stepper.preview .step.fragment:not(.visible) {
+  opacity: .35;
+  visibility: inherit;
+}
+
+/*********************************************
  * FOOTER
  *********************************************/
 
@@ -344,6 +418,11 @@
   .escience-white-overlay, .escience-black-overlay, .escience-blue-pane-left,
   .escience-blue-pane-right, .escience-touch-pane) {
   transform: translateY(100vh); }
+
+/* overview: each thumbnail's background carries its own decorations, shown
+   in their final state and clipped to the thumbnail */
+.reveal.overview .backgrounds .slide-background { overflow: hidden; }
+.reveal.overview .backgrounds .escience-decorations > * { transition: none; }
 
 /*********************************************
  * SLIDE CONTENT ABOVE DECORATIONS

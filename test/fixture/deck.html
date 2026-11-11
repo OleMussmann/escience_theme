@@ -5,9 +5,8 @@
   data-expect-selection: computed ::selection colours of the first <p>.
   data-fonts-differ: elements (tag.class) whose typography may differ from
   BASELINE_REF, e.g. "pre.code-wrapper".
-  On .reveal, data-overview-max-diff: number of pixels that may differ from
-  BASELINE_REF in the overview screenshot, which shows every slide's content
-  (not the decorations).
+  On .reveal, data-overview-differs: the overview renders differently from
+  BASELINE_REF, so it is left out of the pixel comparison.
   data-baseline-differs: the slide intentionally renders differently from
   BASELINE_REF, so it is left out of the pixel and typography comparison.
 -->
@@ -54,7 +53,7 @@
   </script>
 </head>
 <body>
-<div class="reveal" data-overview-max-diff="200">
+<div class="reveal" data-overview-differs>
   <div class="slides">
 
     <section data-state="title" data-expect-opacity="1">
@@ -167,6 +166,59 @@ def greet(name: str) -> str:
       <h2>Footer with a link</h2>
       <p>Body <a href="#">link</a>; the footer link is white on the blue strip.</p>
       <footer>Source: <a href="#">example.org</a></footer>
+    </section>
+
+    <section data-state="standard" data-baseline-differs>
+      <h2>Columns</h2>
+      <div class="columns items-center">
+        <ul><li>Two equal columns</li><li>Centred vertically</li><li>with .items-center</li></ul>
+        <img src="/test/fixture/bg.svg" style="width: 100%">
+      </div>
+      <div class="columns" style="--columns: 7fr 3fr">
+        <div class="card">7fr</div>
+        <div class="card">3fr</div>
+      </div>
+    </section>
+
+    <section data-state="standard" data-baseline-differs>
+      <h2>Wrapping columns and cards</h2>
+      <div class="columns" style="--columns: repeat(3, 1fr)">
+        <div class="card"><strong>Card</strong><p>Text with a <a href="#">link</a>.</p></div>
+        <div class="card highlight"><strong>Highlight</strong><p>Blue border.</p></div>
+        <div class="card bordered"><strong>Bordered</strong><p>Border only.</p></div>
+        <div class="card">Four</div>
+        <div class="card">Five</div>
+        <div class="card">Six</div>
+      </div>
+    </section>
+
+    <section data-state="title" data-baseline-differs>
+      <h2>Cards on a dark slide</h2>
+      <div class="columns">
+        <div class="card"><h3>Heading</h3><p>Dark text and a <a href="#">link</a>.</p></div>
+        <div class="card bordered"><h3>Bordered</h3><p>Slide colours, <a href="#">link</a>.</p></div>
+      </div>
+    </section>
+
+    <section data-state="standard" data-baseline-differs>
+      <h2>Stepper with rows</h2>
+      <div class="stepper" style="--columns: 6em repeat(2, 1fr)">
+        <div class="step card columns items-center"><strong>One</strong><span>a</span><span>b</span></div>
+        <div class="detail columns"><em>e.g.</em><span>detail one a</span><span>detail one b</span></div>
+        <div class="step card columns items-center fragment"><strong>Two</strong><span>c</span><span>d</span></div>
+        <div class="detail columns"><em>e.g.</em><span>detail two c</span><span>detail two d</span></div>
+        <div class="step card columns items-center fragment"><strong>Three</strong><span>e</span><span>f</span></div>
+        <div class="detail columns"><em>e.g.</em><span>detail three e</span><span>detail three f</span></div>
+      </div>
+    </section>
+
+    <section data-state="standard" data-baseline-differs>
+      <h2>Stepper list, preview</h2>
+      <ul class="stepper preview">
+        <li class="step"><strong>First item</strong><ul class="detail"><li>Detail of the first item</li></ul></li>
+        <li class="step fragment"><strong>Second item</strong><ul class="detail"><li>Detail of the second item</li></ul></li>
+        <li class="step fragment"><strong>Third item</strong><ul class="detail"><li>Detail of the third item</li></ul></li>
+      </ul>
     </section>
 
     <section data-baseline-differs>
