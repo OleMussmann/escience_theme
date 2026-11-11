@@ -1464,7 +1464,7 @@ function setLogoStyle(style) {
 };
 var overview_shown = false;
 function getOpacity(data_state) {
-  var opacity = 0.8;
+  var opacity = 1.0;
   for (let i = 0; i < 11; i++) {
     if (data_state.includes(i)) { opacity = i/10; log("opacity set to " + opacity)}
   };
