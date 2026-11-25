@@ -221,6 +221,31 @@ def greet(name: str) -> str:
       </ul>
     </section>
 
+    <section data-state="standard" data-baseline-differs>
+      <h2>Stepper with a details panel</h2>
+      <div class="stepper preview">
+        <div class="columns" style="--columns: repeat(3, 1fr)">
+          <div class="step card"><strong>One</strong></div>
+          <div class="step card fragment"><strong>Two</strong></div>
+          <div class="step card fragment"><strong>Three</strong></div>
+        </div>
+        <div class="details">
+          <p class="detail"><strong class="label">One:</strong> Short detail of one</p>
+          <p class="detail"><strong class="label">Two:</strong> A longer detail of step two, long enough to wrap onto a second line of the slide</p>
+          <p class="detail"><strong class="label">Three:</strong> Detail of three</p>
+        </div>
+      </div>
+    </section>
+
+    <section data-state="purple_overlay logo" data-baseline-differs>
+      <h2>Components on a dark slide</h2>
+      <div class="columns" style="--columns: repeat(3, 1fr)">
+        <div class="card"><strong>Card</strong><p class="muted">Muted text.</p></div>
+        <div class="card"><div class="card">Nested card</div></div>
+        <div class="card bordered"><strong>Bordered</strong><p class="muted">Muted text.</p></div>
+      </div>
+    </section>
+
     <section data-baseline-differs>
       <h2>No data-state</h2>
       <p>Plain reveal slide, no decorations.</p>

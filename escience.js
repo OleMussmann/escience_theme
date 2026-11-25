@@ -90,13 +90,18 @@ function render(root, slide) {
 }
 
 // In every .stepper inside `scope`, the last shown .step (a plain one, or a
-// fragment that is visible) gets the class current-step; escience.css
-// highlights it and shows only its details.
+// fragment that is visible) gets the class current-step, and so does the
+// .detail at the same position in a .details panel; components.css
+// highlights the step and shows only its details.
 function markSteps(scope) {
   for (const stepper of scope.querySelectorAll('.stepper')) {
     const steps = [...stepper.querySelectorAll('.step')];
     const current = steps.filter(s => !s.classList.contains('fragment') || s.classList.contains('visible')).at(-1);
     for (const step of steps) step.classList.toggle('current-step', step === current);
+    for (const panel of stepper.querySelectorAll('.details')) {
+      [...panel.children].filter(d => d.classList.contains('detail'))
+        .forEach((detail, i) => detail.classList.toggle('current-step', steps[i] === current));
+    }
   }
 }
 

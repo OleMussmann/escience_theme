@@ -1,0 +1,77 @@
+<!doctype html>
+<!--
+  Fixture for test/components.mjs: slide content outside a deck, the way a
+  study view or handout shows it. Only components.css is loaded; the page
+  has its own (deliberately generic) typography and colours. ?scheme=dark
+  gives it a dark background with light text, like a site in dark mode.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>escience_theme components outside a deck</title>
+  <link rel="stylesheet" href="/components.css">
+  <style>
+    body { font: 16px/1.5 sans-serif; max-width: 50rem; margin: 2rem auto; background: #fff; color: #1f2328; }
+    h2, h3 { color: #0b3d62; }
+    a { color: #0b5cad; }
+    body.dark { background: #1e1e1e; color: #e6e6e6; }
+    body.dark h2, body.dark h3 { color: #f0f0f0; }
+    body.dark a { color: #7cc4ff; }
+  </style>
+  <script>
+    if (new URLSearchParams(location.search).get('scheme') === 'dark')
+      document.documentElement.classList.add('dark-scheme');
+  </script>
+</head>
+<body>
+<script>if (document.documentElement.classList.contains('dark-scheme')) document.body.classList.add('dark');</script>
+<div class="escience-components">
+
+  <section>
+    <h2>Cards</h2>
+    <div class="columns" style="--columns: repeat(3, 1fr)">
+      <div class="card"><h3>Heading</h3><p>Text with a <a href="#">link</a>.</p></div>
+      <div class="card highlight"><strong>Highlight</strong><p class="muted">Muted text.</p></div>
+      <div class="card bordered"><h3>Bordered</h3><p>Page colours, <a href="#">link</a>.</p></div>
+      <div class="card"><div class="card"><strong>Nested</strong><p>White card.</p></div></div>
+      <p class="muted">Muted text on the page.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Stepper with rows</h2>
+    <div class="stepper" style="--columns: 6em repeat(2, 1fr)">
+      <div class="step card columns items-center"><strong>One</strong><span>a</span><span>b</span></div>
+      <div class="detail columns"><em class="muted">e.g.</em><span>detail one a</span><span>detail one b</span></div>
+      <div class="step card columns items-center fragment"><strong>Two</strong><span>c</span><span>d</span></div>
+      <div class="detail columns"><em class="muted">e.g.</em><span>detail two c</span><span>detail two d</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Stepper list</h2>
+    <ul class="stepper preview">
+      <li class="step"><strong>First item</strong><ul class="detail"><li>Detail of the first item</li></ul></li>
+      <li class="step fragment"><strong>Second item</strong><ul class="detail"><li>Detail of the second item</li></ul></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Stepper with a details panel</h2>
+    <div class="stepper preview">
+      <div class="columns" style="--columns: repeat(3, 1fr)">
+        <div class="step card"><strong>One</strong></div>
+        <div class="step card fragment"><strong>Two</strong></div>
+        <div class="step card fragment"><strong>Three</strong></div>
+      </div>
+      <div class="details">
+        <p class="detail"><strong class="label">One:</strong> Short detail of one</p>
+        <p class="detail"><strong class="label">Two:</strong> A longer detail of step two, long enough to wrap onto a second line</p>
+        <p class="detail"><strong class="label">Three:</strong> Detail of three</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

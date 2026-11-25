@@ -1,0 +1,118 @@
+/*********************************************
+ * COMPONENTS
+ *
+ * Layout and box classes for slide content. escience.css imports this file,
+ * so decks get them automatically. Pages that show slide content outside a
+ * deck (a study view, a handout) can load this file on its own and wrap the
+ * content in .escience-components: the components then look the same there,
+ * on the page's own light or dark background, without the rest of the theme.
+ *
+ * .columns   grid, two equal columns unless --columns gives a
+ *            grid-template-columns value ("7fr 3fr", "repeat(3, 1fr)");
+ *            further children wrap into new rows. --gap sets the gap.
+ *            Combine with reveal.js's .items-center etc. for alignment.
+ * .card      padded box in light gray with its own dark text, so it reads
+ *            on light and dark backgrounds alike, with even spacing between
+ *            its children; .bordered: border only, keeps the surrounding
+ *            colours; .highlight: blue border. Links in a card are a
+ *            darker eScience blue, readable on its gray. A card inside a
+ *            filled card is white.
+ * .muted     de-emphasised text (lower opacity, so it works on any
+ *            background); use it instead of a grey text colour.
+ * .stepper   steps that appear one by one: .step elements, the first one
+ *            plain, later ones fragments. In a deck, the current step (the
+ *            last one shown, marked .current-step by escience.js) gets a
+ *            blue border if it has one (e.g. .step.card), and only its
+ *            .detail is shown. A step's .detail is
+ *              - the .detail right after the step or inside it, or
+ *              - in a .details panel elsewhere in the stepper, the panel's
+ *                n-th .detail for the n-th step. The panel keeps the height
+ *                of its tallest detail, so the slide does not jump.
+ *            A .label inside a detail names its step; decks hide it (the
+ *            highlighted step says which one is current), pages outside a
+ *            deck show it.
+ *            When the steps are cards, the stepper's other rows line up
+ *            with the cards' content. .preview shows upcoming steps faded
+ *            instead of hidden. --columns and --gap on the stepper apply to
+ *            its .columns rows.
+ *            Outside a deck every step and every detail is shown, each
+ *            detail in its place.
+ *
+ * --columns and --gap apply only to the element they are set on, so a
+ * nested .columns starts from the defaults again.
+ *********************************************/
+
+:root {
+  --nlesc-blue: #009DDD;
+  --nlesc-purple: #380339;
+  --nlesc-yellow: #FFB213;
+  --light-gray: #D8D8D8;
+  /* eScience blue darkened for links on light gray (5:1; the brand blue is 2.2:1) */
+  --nlesc-blue-dark: #005E8A;
+}
+
+@property --columns { syntax: "*"; inherits: false; }
+@property --gap { syntax: "*"; inherits: false; }
+
+:is(.reveal, .escience-components) .columns {
+  display: grid;
+  grid-template-columns: var(--columns, repeat(2, minmax(0, 1fr)));
+  gap: var(--gap, .5em);
+}
+
+:is(.reveal, .escience-components) .card {
+  padding: .4em .6em;  /* the stepper's row alignment below uses .6em */
+  border: 2px solid var(--light-gray);
+  border-radius: 8px;
+  background-color: var(--light-gray);
+  color: #222;
+  text-align: start;
+  --r-heading-color: #222;
+  --link-color: var(--nlesc-blue-dark);
+  --link-color-hover: var(--nlesc-purple);
+}
+:is(.reveal, .escience-components) .card > * { margin-block: 0; }
+:is(.reveal, .escience-components) .card:not(.columns) > * + * { margin-top: .4em; }
+:is(.reveal, .escience-components) .card:not(.bordered) .card:not(.bordered) {
+  border-color: white;
+  background-color: white;
+}
+:is(.reveal, .escience-components) .card.bordered {
+  background-color: transparent;
+  color: inherit;
+  --r-heading-color: inherit;
+  --link-color: inherit;
+  --link-color-hover: inherit;
+}
+:is(.reveal, .escience-components) .card.highlight { border-color: var(--nlesc-blue); }
+
+/* In a deck, reveal.js colours headings and links through these variables;
+   a page has its own heading and link colours, which a card overrides. */
+.escience-components .card :is(h1, h2, h3, h4, h5, h6) { color: var(--r-heading-color); }
+.escience-components .card a { color: var(--link-color); }
+.escience-components .card a:hover { color: var(--link-color-hover); }
+
+:is(.reveal, .escience-components) .muted { opacity: .7; }
+
+:is(.reveal, .escience-components) .stepper { text-align: start; }
+:is(.reveal, .escience-components) .stepper > * { --columns: inherit; --gap: inherit; }
+:is(.reveal, .escience-components) .stepper > .step.card { margin-block: .4em; }
+:is(.reveal, .escience-components) .stepper:has(> .step.card) > :not(.step) { padding-inline: calc(.6em + 2px); }
+:is(.reveal, .escience-components) .stepper .details { margin-top: .6em; }
+:is(.reveal, .escience-components) .stepper .details > .detail + .detail { margin-top: .6em; }
+
+/* Deck only: escience.js marks the current step and its panel detail with
+   .current-step. */
+.reveal .stepper .step.current-step { border-color: var(--nlesc-blue); }
+.reveal .stepper .step:not(.current-step) + .detail,
+.reveal .stepper .step:not(.current-step) .detail {
+  display: none;
+}
+.reveal .stepper .details { display: grid; }
+.reveal .stepper .details > .detail { grid-area: 1 / 1; margin: 0; }
+.reveal .stepper .details > .detail:not(.current-step) { visibility: hidden; }
+.reveal .stepper .detail .label { display: none; }
+.reveal .slides section .stepper.preview .step.fragment:not(.visible) {
+  opacity: .35;
+  visibility: inherit;
+}

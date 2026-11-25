@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.4.0 (unreleased)
+
+### Added
+
+- `components.css`: the layout classes on their own (also exported as
+  `escience_theme/components.css`). `escience.css` imports it, so decks
+  need no change. Pages that show slide content outside a deck, such as a
+  study view, load it and wrap the content in `.escience-components`; cards
+  then keep their own colours on a light or dark page, and every step and
+  detail of a stepper is shown in its place.
+- `.stepper .details`: a panel elsewhere in the stepper whose n-th
+  `.detail` belongs to the n-th step, for steps laid out as tiles. In a
+  deck only the current step's detail is shown and the panel keeps the
+  height of its tallest detail; a `.label` inside a detail is shown only
+  outside a deck.
+- `.muted`: de-emphasised text by opacity, readable on light and dark
+  backgrounds (instead of a grey text colour).
+
+### Changed
+
+- Links in a card are a darker eScience blue (`--nlesc-blue-dark`,
+  `#005E8A`, 5:1 on the card's gray). The brand blue had a contrast of
+  2.2:1 there.
+
 ## 0.3.0 (2026-11-11)
 
 ### Added

@@ -1,5 +1,5 @@
 // Checks that the package resolves by name the way consumers (NEBULA) use
-// it: the plugin via the package root, the stylesheet via its export, and
+// it: the plugin via the package root, the stylesheets via their exports, and
 // nothing else. Relies on Node resolving a package's own name through
 // its "exports" map.
 
@@ -15,8 +15,10 @@ assert.equal(plugin.id, 'Escience');
 assert.equal(typeof plugin.init, 'function');
 assert.equal(typeof plugin.destroy, 'function');
 
-const css = fileURLToPath(import.meta.resolve('escience_theme/escience.css'));
-assert.ok(existsSync(css), `missing ${css}`);
+for (const file of ['escience.css', 'components.css']) {
+  const css = fileURLToPath(import.meta.resolve(`escience_theme/${file}`));
+  assert.ok(existsSync(css), `missing ${css}`);
+}
 
 assert.throws(() => import.meta.resolve('escience_theme/escience.js'),
   { code: 'ERR_PACKAGE_PATH_NOT_EXPORTED' });

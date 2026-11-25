@@ -201,8 +201,15 @@ async function shoot(variant) {
           const shown = steps.filter(s => !s.classList.contains('fragment') || s.classList.contains('visible'));
           const current = shown.at(-1);
           const highlighted = steps.filter(s => getComputedStyle(s).borderTopColor === blue);
-          const owner = d => d.closest('.step') || d.previousElementSibling;
-          const displayed = [...stepper.querySelectorAll('.detail')].filter(d => getComputedStyle(d).display !== 'none');
+          // a detail belongs to the step it is in or follows, or, in a
+          // .details panel, to the step at its position
+          const owner = d => d.parentElement.classList.contains('details')
+            ? steps[[...d.parentElement.children].filter(c => c.classList.contains('detail')).indexOf(d)]
+            : d.closest('.step') || d.previousElementSibling;
+          const displayed = [...stepper.querySelectorAll('.detail')].filter(d =>
+            getComputedStyle(d).display !== 'none' && getComputedStyle(d).visibility !== 'hidden');
+          if (displayed.some(d => [...d.querySelectorAll('.label')].some(l => getComputedStyle(l).display !== 'none')))
+            problems.push(`${label}: a detail label is displayed`);
           if (highlighted.length !== 1 || highlighted[0] !== current) problems.push(`${label}: ${highlighted.length} highlighted, not the current step`);
           if (displayed.some(d => owner(d) !== current)) problems.push(`${label}: a detail of another step is displayed`);
           if (stepper.querySelectorAll('.detail').length && !displayed.length) problems.push(`${label}: no detail displayed`);

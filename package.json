@@ -1,21 +1,23 @@
 {
   "name": "escience_theme",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "eScience Center theme for web presentations",
   "type": "module",
   "main": "escience.js",
   "exports": {
     ".": "./escience.js",
     "./escience.css": "./escience.css",
+    "./components.css": "./components.css",
     "./package.json": "./package.json"
   },
   "files": [
     "escience.js",
     "escience.css",
+    "components.css",
     "NOTICE"
   ],
   "scripts": {
-    "test": "node test/package.mjs && node test/screenshots.mjs"
+    "test": "node test/package.mjs && node test/components.mjs && node test/screenshots.mjs"
   },
   "peerDependencies": {
     "reveal.js": "^5.0.0 || ^6.0.0"

@@ -83,9 +83,17 @@ into new rows; `--gap` sets the gap. reveal.js's own `.items-center`,
 </div>
 ```
 
-**`.card`** is a padded light-gray box with dark text. `.card.bordered` has a
-border only and keeps the slide's colours; `.card.highlight` has a blue
-border. A card inside a filled card is white.
+**`.card`** is a padded light-gray box with dark text, readable on light and
+dark slides alike. `.card.bordered` has a border only and keeps the slide's
+colours; `.card.highlight` has a blue border. A card inside a filled card is
+white.
+
+**`.muted`** de-emphasises text by lowering its opacity, so it stays readable
+on any background. Use it instead of a grey text colour.
+
+Prefer these classes over inline colours (`style="background: lightgray"`,
+`color: gray`): an inline light background on a dark slide, or on a page in
+dark mode, keeps the white text of its surroundings and becomes unreadable.
 
 **`.stepper`** shows steps one by one. Its `.step` elements are the steps: the
 first one plain, the later ones fragments. The current step (the last one
@@ -103,6 +111,43 @@ it. `.stepper.preview` shows upcoming steps faded instead of hidden.
   <div class="detail columns"><em>e.g.</em><span>Documents</span><span>Outcomes</span></div>
 </div>
 ```
+
+When the steps are tiles, their details can go in a `.details` panel
+elsewhere in the stepper: the panel's n-th `.detail` belongs to the n-th
+step. The panel keeps the height of its tallest detail. A `.label` inside a
+detail names its step; it is hidden in the deck, where the highlighted tile
+already says which step is current, and shown outside a deck.
+
+```html
+<div class="stepper preview">
+  <div class="columns" style="--columns: repeat(3, 1fr)">
+    <div class="step card"><strong>Reliability</strong></div>
+    <div class="step card fragment"><strong>Privacy</strong></div>
+    <div class="step card fragment"><strong>Security</strong></div>
+  </div>
+  <div class="details">
+    <p class="detail"><strong class="label">Reliability:</strong> Plausible but false claims</p>
+    <p class="detail"><strong class="label">Privacy:</strong> Sensitive files reach a provider</p>
+    <p class="detail"><strong class="label">Security:</strong> Prompt injection</p>
+  </div>
+</div>
+```
+
+## Slide content outside a deck
+
+`escience_theme/components.css` holds the layout classes on their own
+(`escience.css` imports it). A page that shows slide content without
+reveal.js, such as a study view or handout, loads only this file and wraps
+the content in `.escience-components`:
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/escience_theme@0.4.0/components.css">
+<div class="escience-components"> … slide HTML … </div>
+```
+
+Cards keep their own colours on the page's light or dark background; text
+outside cards follows the page. Steppers show every step with its details
+in place, including the `.label` of panel details.
 
 ## Printing
 
@@ -140,6 +185,11 @@ selection colours), `data-fonts-differ` (elements whose typography may differ
 from the baseline) and `data-baseline-differs` (left out of both comparisons because the slide
 changes on purpose). `data-overview-differs` on `.reveal` leaves the overview
 screenshot out of the pixel comparison.
+
+`npm test` also opens `test/fixture/page.html`, which loads only
+`components.css`, on a light and on a dark page. All text there must have a
+contrast of at least 4.5:1 against what it sits on, every step, detail and
+label must be shown, and no two details may overlap.
 
 ## License
 
